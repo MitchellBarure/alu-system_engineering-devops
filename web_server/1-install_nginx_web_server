@@ -11,6 +11,8 @@ apt-get -y install nginx
 install -d -m 0755 /var/www/html
 echo "Holberton School for the win!" > /var/www/html/index.html
 
+rm -f /var/www/html/index.nginx-debian.html || true
+
 if pgrep -x nginx >/dev/null 2>&1; then
   service nginx reload
 else
