@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#This script installs nginx on my web-01 server
+
+set -e
+
+export debian_frontend=noninteractive
+
+apt-get -y update
+apt-get -y install nginx
+
+install -d -m 0755 /var/ww/html
+echo "Holberton School for the win!" > /var/www/html/index.html
+
+default_site="/etc/nginx/sites-available/default"
+if [ -f "$default_site"]; then
+   sed -i 's/listen \s*80 default_server;/listen 80 default_server;/' "$default_site" || true
+   sed -i 's/listen \s*\[::\]:80 default_server;/listen [::]:80 default_server;/' "$default_site" || true
+fi
+
+if pgrep -x nginx > /dev/null 2>&1; then
+  service nginx reload
+else
+  service nginx start
+fi
+
+exit 0
