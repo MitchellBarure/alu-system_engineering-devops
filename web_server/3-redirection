@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Sets up Nginx and configures a 301 redirect from /redirect_me to another URL.
+
+set -e
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get -y update
+apt-get -y install nginx
+
+echo "Holberton School" > /var/www/html/index.html
+
+default_site="/etc/nginx/sites-available/default"
+
+sed -i '/server_name _;/a\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}' ""
+
+if pgrep -x nginx >/dev/null 2>&1; then
+  service nginx reload
+else
+  service nginx start
+fi
