@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sets up Nginx and configures a 301 redirect from /redirect_me to another URL.
+# Configures Nginx so /redirect_me returns a 301 redirect to a target URL
 
 set -e
 export DEBIAN_FRONTEND=noninteractive
@@ -7,13 +7,17 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -y update
 apt-get -y install nginx
 
-echo "Holberton School" > /var/www/html/index.html
+printf '%s\n' 'Holberton School' > /var/www/html/index.html
 
-NGINX_DEFAULT="/etc/nginx/sites-available/default
+NGINX_DEFAULT="/etc/nginx/sites-available/default"
 
-sed -i '/server_name _;/a\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}' ""
+# Insert once: add the rewrite after the server_name line if not already present
+if ! grep -q 'rewrite \^/redirect_me ' "$NGINX_DEFAULT"; then
+  sed -i '/server_name _;/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' "$NGINX_DEFAULT"
+fi
 
-if pgrep -x nginx >/dev/null 2>&1; then
+# Start or reload Nginx without systemctl
+if pgrep -x "nginx" >/dev/null 2>&1; then
   service nginx reload
 else
   service nginx start
