@@ -9,7 +9,7 @@ apt-get -y install nginx
 
 echo "Holberton School" > /var/www/html/index.html
 
-default_site="/etc/nginx/sites-available/default"
+NGINX_DEFAULT="/etc/nginx/sites-available/default
 
 sed -i '/server_name _;/a\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}' ""
 
