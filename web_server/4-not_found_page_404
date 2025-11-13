@@ -1,24 +1,34 @@
-#!/usr/bin/env bash
-# Installs nginx and configures a custom 404 page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Lost in the Space</title>
+    <link rel="stylesheet" href="404_style.css"> 
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ceci n'est pas une page</h1>
+        </header>
 
-set -e
-export debian_frontend=noninteractive
+        <section class="main-content">
+            <div class="error-code">404</div>
+            <h2>🛰️ Lost Command Signal</h2>
+            <p>Error Code: **PAGE_NOT_FOUND**</p>
+            <p>Our telemetry indicates that the requested resource has drifted away. It might be orbiting a black hole or just a typo.</p>
 
-apt-get -y update
-apt-get -y install nginx
+            <div class="terminal-box">
+                <p>&gt; **Attempting to recover route... [FAILED]**</p>
+                <p>&gt; **Target URL:** <span class="url-path">/non-existent-path/</span></p>
+                <p>&gt; **Suggested Actions:**</p>
+                <ul>
+                    <li><a href="/" class="action-link">RETURN TO BASE COMMAND (Homepage)</a></li>
+                    <li><a href="/sitemap.xml" class="action-link">CHECK STAR CHARTS (Sitemap)</a></li>
+                    <li><a href="mailto:support@yourdomain.com" class="action-link">SEND DISTRESS SIGNAL (Contact Support)</a></li>
+                </ul>
+            </div>
+        </section>
 
-echo "Ceci n'est pas une page" > /var/www/html/custom_404.html
-
-default_site="/etc/nginx/sites-available/default"
-
-sed -i '/error_page 404/d' "$DEFAULT_SITE"
-
-sed -i '/server_name _;/a\\terror_page 404 /custom_404.html;\n\tlocation = /custom_404.html {\n\t\troot /var/www/html;\n\t\tinternal;\n\t}' "$default_site"
-
-echo "Holberton School" > /var/www/html/index.html
-
-if pgrep -x nginx >/dev/null 2>&1; then
-  service nginx reload
-else
-  service nginx start
-fi
+</body>
+</html>
