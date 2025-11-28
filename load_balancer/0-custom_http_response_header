@@ -1,21 +1,35 @@
 #!/usr/bin/env bash
-# Configures Nginx to send 'X-Served-By: <hostname>' on every HTTP response
+# Configure Nginx with a custom X-Served-By header showing hostname
 
-# shellcheck disable=SC2154
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get -y update
-apt-get -y install nginx
-printf '%s\n' 'Holberton School' > /var/www/html/index.html
+# Install nginx
+apt-get update -y
+apt-get install -y nginx
 
-NGINX_DEFAULT="/etc/nginx/sites-available/default"
-if ! grep -q 'add_header X-Served-By' "$NGINX_DEFAULT"; then
-  sed -i '/server_name _;/a \    add_header X-Served-By $hostname;' "$NGINX_DEFAULT"
-fi
+# Create default index page
+echo "Holberton School for the win!" > /var/www/html/index.html
 
-if pgrep -x "nginx" >/dev/null 2>&1; then
-  service nginx reload
-else
-  service nginx start
-fi
+# Overwrite default nginx server block
+cat > /etc/nginx/sites-available/default << 'EOCONF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html;
+
+    server_name _;
+
+    # Custom header
+    add_header X-Served-By $hostname;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+EOCONF
+
+# Restart nginx (no systemctl allowed)
+service nginx restart

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs and configures HAProxy to load-balance traffic to web-01 and web-02
+#Installs and configures HAProxy to load-balance traffic to web-01 and web-02
 
 set -e
 export DEBIAN_FRONTEND=noninteractive
@@ -7,10 +7,11 @@ export DEBIAN_FRONTEND=noninteractive
 WEB1_IP="54.211.70.81"
 WEB2_IP="44.201.147.220"
 
+# Install HAProxy
 apt-get update -y
 apt-get install -y haproxy
 
-# Ensure HAProxy starts on boot (older Ubuntu)
+# Ensure HAProxy starts on boot (older Ubuntu style)
 if [ -f /etc/default/haproxy ]; then
   sed -i 's/^\s*ENABLED=.*/ENABLED=1/' /etc/default/haproxy || true
 fi
@@ -28,17 +29,21 @@ defaults
     mode    http
     option  httplog
     option  dontlognull
-    timeout connect 5s
-    timeout client  50s
-    timeout server  50s
-    balance roundrobin
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
 
 frontend http_front
     bind *:80
     default_backend web_back
 
 backend web_back
+    balance roundrobin
     option httpchk GET /
-    http-check expect status 200
-    server web01 :80 check
-    server web02 :80 check
+    server web01 ${WEB1_IP}:80 check
+    server web02 ${WEB2_IP}:80 check
+EOF
+
+# Restart HAProxy to apply the new configuration
+service haproxy restart
+
