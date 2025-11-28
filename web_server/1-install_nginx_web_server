@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#This script installs nginx on my web-01 server
+#This script installs nginx on my web-01 server and configures a page containing "Holberton School"
 
 set -e
 
@@ -8,15 +8,13 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get -y update
 apt-get -y install nginx
 
-install -d -m 0755 /var/www/html
+mkdir -p /var/www/html
 echo "Holberton School for the win!" > /var/www/html/index.html
 
 rm -f /var/www/html/index.nginx-debian.html || true
 
-if pgrep -x nginx >/dev/null 2>&1; then
+if pgrep -x nginx >/dev/null; then
   service nginx reload
 else
   service nginx start
 fi
-
-exit 0
