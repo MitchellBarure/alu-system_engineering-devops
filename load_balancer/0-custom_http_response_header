@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Configures Nginx to send 'X-Served-By: <hostname>' on every HTTP response
+
+# shellcheck disable=SC2154
+set -e
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get -y update
+apt-get -y install nginx
+printf '%s\n' 'Holberton School' > /var/www/html/index.html
+
+NGINX_DEFAULT="/etc/nginx/sites-available/default"
+if ! grep -q 'add_header X-Served-By' "$NGINX_DEFAULT"; then
+  sed -i '/server_name _;/a \    add_header X-Served-By $hostname;' "$NGINX_DEFAULT"
+fi
+
+if pgrep -x "nginx" >/dev/null 2>&1; then
+  service nginx reload
+else
+  service nginx start
+fi
