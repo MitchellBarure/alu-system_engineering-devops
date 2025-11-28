@@ -1,24 +1,36 @@
 #!/usr/bin/env bash
-# Configures Nginx so /redirect_me returns a 301 redirect to a target URL
+# Configure Nginx so /redirect_me returns a 301 redirect to a target URL
 
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get -y update
-apt-get -y install nginx
+# Install nginx
+apt-get update -y
+apt-get install -y nginx
 
-printf '%s\n' 'Holberton School' > /var/www/html/index.html
+# Ensure the root page contains the required string
+echo 'Holberton School for the win!' > /var/www/html/index.html
 
-NGINX_DEFAULT="/etc/nginx/sites-available/default"
+# Configure the default server block with a 301 redirect on /redirect_me
+cat > /etc/nginx/sites-available/default << 'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-# Insert once: add the rewrite after the server_name line if not already present
-if ! grep -q 'rewrite \^/redirect_me ' "$NGINX_DEFAULT"; then
-  sed -i '/server_name _;/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' "$NGINX_DEFAULT"
-fi
+    root /var/www/html;
+    index index.html;
 
-# Start or reload Nginx without systemctl
-if pgrep -x "nginx" >/dev/null 2>&1; then
-  service nginx reload
-else
-  service nginx start
-fi
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location = /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+}
+EOF
+
+# Restart nginx (no systemctl allowed)
+service nginx restart
