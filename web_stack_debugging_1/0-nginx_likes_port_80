@@ -1,21 +1,3 @@
-#!/usr/bin/env bash
-# Fixes Nginx so that it runs and listens on port 80 on all IPv4 interfaces
-
-set -e
-
-# Ensure nginx is installed
-apt-get update -y
-apt-get install -y nginx
-
-NGINX_DEFAULT="/etc/nginx/sites-available/default"
-
-# Make sure the default server listens on port 80 (fix cases like 8080, 81, etc.)
-sed -i 's/listen [0-9]\+ default_server;/listen 80 default_server;/' ""
-sed -i 's/listen \[::\]:[0-9]\+ default_server;/listen [::]:80 default_server;/' ""
-
-# Start or restart nginx so it picks up the config
-if pgrep -x nginx >/dev/null 2>&1; then
-  service nginx restart
-else
-  service nginx start
-fi
+#/usr/bin/env bash
+sed -i 's|8080|80|g' /etc/nginx/sites-enabled/default
+sudo service nginx restart
