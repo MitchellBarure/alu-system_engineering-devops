@@ -9,7 +9,7 @@ apt-get install -y nginx
 
 NGINX_DEFAULT="/etc/nginx/sites-available/default"
 
-# Make sure the default server listens on port 80 (common bugs: 8080, 81, etc.)
+# Make sure the default server listens on port 80 (fix cases like 8080, 81, etc.)
 sed -i 's/listen [0-9]\+ default_server;/listen 80 default_server;/' ""
 sed -i 's/listen \[::\]:[0-9]\+ default_server;/listen [::]:80 default_server;/' ""
 
