@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#Installs and configures HAProxy to load-balance traffic to web-01 and web-02
+# Installs and configures HAProxy to load-balance traffic to web-01 and web-02
 
 set -e
 export DEBIAN_FRONTEND=noninteractive
@@ -16,8 +16,8 @@ if [ -f /etc/default/haproxy ]; then
   sed -i 's/^\s*ENABLED=.*/ENABLED=1/' /etc/default/haproxy || true
 fi
 
-# Write a clean haproxy.cfg (HTTP mode, round-robin, health checks)
-cat > /etc/haproxy/haproxy.cfg <<EOF
+# Write a clean haproxy.cfg (HTTP mode, round-robin)
+cat > /etc/haproxy/haproxy.cfg <<EOCONF
 global
     log /dev/log local0
     log /dev/log local1 notice
@@ -40,10 +40,9 @@ frontend http_front
 backend web_back
     balance roundrobin
     option httpchk GET /
-    server web01 ${WEB1_IP}:80 check
-    server web02 ${WEB2_IP}:80 check
-EOF
+    server web-01 ${WEB1_IP}:80 check
+    server web-02 ${WEB2_IP}:80 check
+EOCONF
 
 # Restart HAProxy to apply the new configuration
 service haproxy restart
-
