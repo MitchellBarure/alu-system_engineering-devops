@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Configures Nginx to run as user 'nginx' and listen on port 8080
+
+set -e
+
+# Ensure nginx is installed
+apt-get update -y
+apt-get install -y nginx
+
+# Ensure the 'nginx' user exists (system user, no login shell)
+if ! id -u nginx >/dev/null 2>&1; then
+    useradd -r -s /usr/sbin/nologin nginx
+fi
+
+NGINX_CONF="/etc/nginx/nginx.conf"
+DEFAULT_SITE="/etc/nginx/sites-available/default"
+
+# Make nginx run its worker processes as 'nginx' user
+if grep -q "^user " ""; then
+    sed -i 's/^user .*/user nginx;/' ""
+else
+    # If there is no user directive, add one near the top
+    sed -i '1 i\user nginx;' ""
+fi
+
+# Make the default server listen on port 8080 (IPv4 and IPv6)
+sed -i 's/listen 80 default_server;/listen 8080 default_server;/' ""
+sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' ""
+
+# Start or restart nginx so changes take effect
+if pgrep -x nginx >/dev/null 2>&1; then
+    service nginx restart
+else
+    service nginx start
+fi
