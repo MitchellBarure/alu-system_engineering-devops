@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # Runs the 'whoami' command as a different user passed as an argument
 
-su "$1" "" -c "whoami"
+su -s /bin/sh "$1" -c "whoami"
