@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Fixes Apache so that the root page returns 'Hello Holberton'
+
+set -e
+
+# Update package list and install Apache
+apt-get update -y
+apt-get install -y apache2
+
+# Overwrite the default index page with the required content
+echo 'Hello Holberton' > /var/www/html/index.html
+
+# Start (or restart) Apache
+service apache2 restart
